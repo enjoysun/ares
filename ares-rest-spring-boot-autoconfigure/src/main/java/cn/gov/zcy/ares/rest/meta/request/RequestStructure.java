@@ -1,10 +1,14 @@
 package cn.gov.zcy.ares.rest.meta.request;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.MultiValueMap;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -70,33 +74,33 @@ public class RequestStructure {
     }
 
     /*
-    * 请求地址
-    * */
+     * 请求地址
+     * */
     private String requestUrl;
 
     /*
-    * 请求方法
-    * */
+     * 请求方法
+     * */
     private HttpMethod requestMethod;
 
     /*
-    * 请求头
-    * */
+     * 请求头
+     * */
     private MultiValueMap<String, String> header;
 
     /*
-    * 映射结果类
-    * */
+     * 映射结果类
+     * */
     private Class<?> resultMapper;
 
     /*
-    * 请求参数key， value
-    * */
+     * 请求参数key， value
+     * */
     private Map<String, String> params;
 
     /*
-    * 占位参数
-    * */
+     * 占位参数
+     * */
     private List<Object> pathVariable;
 
     public static Builder builder() {
@@ -149,5 +153,18 @@ public class RequestStructure {
         public RequestStructure build() {
             return new RequestStructure(this);
         }
+    }
+
+    public static LinkedHashMap<String, String> headerSplice(MultiValueMap<String, String> header) {
+        LinkedHashMap<String, String> headers = new LinkedHashMap<>();
+        if (null != header && !header.isEmpty()) {
+            header.forEach((key, value) -> {
+                if (null != value && !value.isEmpty()) {
+                    String collect = value.stream().map(Objects::toString).collect(Collectors.joining(","));
+                    headers.put(key, headers.containsKey(key) ? String.format("%s,%s", headers.get(key), collect) : collect);
+                }
+            });
+        }
+        return headers;
     }
 }
