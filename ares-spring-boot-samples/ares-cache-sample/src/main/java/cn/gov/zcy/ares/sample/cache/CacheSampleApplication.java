@@ -1,15 +1,15 @@
-package cn.gov.zcy.ares.cache.sample;
+package cn.gov.zcy.ares.sample.cache;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
- * @datetime 2021-11-24 16:37:36
+ * @datetime 2021-11-29 11:43:03
  */
 @SpringBootApplication
-public class SampleApplication {
+public class CacheSampleApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SampleApplication.class, args);
+        SpringApplication.run(CacheSampleApplication.class, args);
     }
 }

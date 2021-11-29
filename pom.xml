@@ -11,7 +11,9 @@
     <modules>
         <module>ares-cache-spring-boot-starter</module>
         <module>ares-cache-spring-boot-autoconfigure</module>
-        <module>ares-cache-spring-boot-sample</module>
+        <module>ares-rest-spring-boot-starter</module>
+        <module>ares-rest-spring-boot-autoconfigure</module>
+        <module>ares-spring-boot-samples</module>
     </modules>
 
     <description>Ares(阿瑞斯)工具孵化</description>

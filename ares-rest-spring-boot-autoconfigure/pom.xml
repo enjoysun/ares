@@ -8,16 +8,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <version>1.0.1-GA</version>
 
-    <version>1.0.0-GA</version>
+    <artifactId>ares-rest-spring-boot-autoconfigure</artifactId>
 
-    <artifactId>ares-cache-spring-boot-autoconfigure</artifactId>
-
-    <name>ares-cache-spring-boot-autoconfigure</name>
-
-    <properties>
-        <module.name>cn.gov.zcy.ares.cache</module.name>
-    </properties>
+    <packaging>jar</packaging>
 
     <dependencies>
         <!-- Compile dependencies -->
@@ -51,9 +46,5 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
-
     </dependencies>
-
-
 </project>
