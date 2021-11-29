@@ -1,13 +1,12 @@
 package cn.gov.zcy.ares.rest.meta.request;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -155,16 +154,29 @@ public class RequestStructure {
         }
     }
 
-    public static LinkedHashMap<String, String> headerSplice(MultiValueMap<String, String> header) {
-        LinkedHashMap<String, String> headers = new LinkedHashMap<>();
+    public static HttpHeaders headerSplice(MultiValueMap<String, String> header) {
+        if (header instanceof HttpHeaders) {
+            return (HttpHeaders) header;
+        }
+        HttpHeaders headers = new HttpHeaders();
         if (null != header && !header.isEmpty()) {
             header.forEach((key, value) -> {
                 if (null != value && !value.isEmpty()) {
-                    String collect = value.stream().map(Objects::toString).collect(Collectors.joining(","));
-                    headers.put(key, headers.containsKey(key) ? String.format("%s,%s", headers.get(key), collect) : collect);
+                    headers.put(key, value);
                 }
             });
         }
         return headers;
+    }
+
+    public static void main(String[] args) {
+        MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
+        valueMap.add("Accept-Encoding:", "gzip");
+        valueMap.add("Accept-Encoding:", "tar");
+        valueMap.add("ss","23");
+        System.out.println(valueMap.get("Accept-Encoding:"));
+        HttpHeaders linkedHashMap = headerSplice(valueMap);
+        System.out.println(linkedHashMap.get("Accept-Encoding:"));
+        headerSplice(linkedHashMap);
     }
 }
