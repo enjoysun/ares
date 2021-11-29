@@ -9,13 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>1.0.1-SNAPSHOT</version>
+
     <artifactId>ares-rest-spring-boot-starter</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>ares-rest-spring-boot-autoconfigure</artifactId>
-            <version>1.0.1-GA</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
