@@ -1,21 +1,19 @@
 package cn.gov.zcy.ares.rest.meta.request;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 15:06:10
  * * request-body
  */
-public class RequestStructure {
-    public RequestStructure(Builder builder) {
+public class RequestStructure<T> {
+    public RequestStructure(Builder<T> builder) {
         this.requestUrl = builder.requestUrl;
         this.requestMethod = builder.requestMethod;
         this.header = builder.header;
@@ -48,11 +46,11 @@ public class RequestStructure {
         this.header = header;
     }
 
-    public Class<?> getResultMapper() {
+    public Class<T> getResultMapper() {
         return resultMapper;
     }
 
-    public void setResultMapper(Class<?> resultMapper) {
+    public void setResultMapper(Class<T> resultMapper) {
         this.resultMapper = resultMapper;
     }
 
@@ -90,7 +88,7 @@ public class RequestStructure {
     /*
      * 映射结果类
      * */
-    private Class<?> resultMapper;
+    private Class<T> resultMapper;
 
     /*
      * 请求参数key， value
@@ -102,55 +100,55 @@ public class RequestStructure {
      * */
     private List<Object> pathVariable;
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T> Builder<T> builder() {
+        return new Builder<T>();
     }
 
-    public static class Builder {
+    public static class Builder<T> {
         private String requestUrl;
 
         private HttpMethod requestMethod;
 
         private MultiValueMap<String, String> header;
 
-        private Class<?> resultMapper;
+        private Class<T> resultMapper;
 
         private Map<String, String> params;
 
         private List<Object> pathVariable;
 
-        public Builder requestUrl(String requestUrl) {
+        public Builder<T> requestUrl(String requestUrl) {
             this.requestUrl = requestUrl;
             return this;
         }
 
-        public Builder requestMethod(HttpMethod requestMethod) {
+        public Builder<T> requestMethod(HttpMethod requestMethod) {
             this.requestMethod = requestMethod;
             return this;
         }
 
-        public Builder header(MultiValueMap<String, String> header) {
+        public Builder<T> header(MultiValueMap<String, String> header) {
             this.header = header;
             return this;
         }
 
-        public Builder resultMapper(Class<?> resultMapper) {
+        public Builder<T> resultMapper(Class<T> resultMapper) {
             this.resultMapper = resultMapper;
             return this;
         }
 
-        public Builder params(Map<String, String> params) {
+        public Builder<T> params(Map<String, String> params) {
             this.params = params;
             return this;
         }
 
-        public Builder pathVariable(List<Object> pathVariable) {
+        public Builder<T> pathVariable(List<Object> pathVariable) {
             this.pathVariable = pathVariable;
             return this;
         }
 
-        public RequestStructure build() {
-            return new RequestStructure(this);
+        public RequestStructure<T> build() {
+            return new RequestStructure<T>(this);
         }
     }
 

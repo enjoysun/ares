@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @EnableConfigurationProperties({LarkRestTemplateProperties.class})
-@Import({})
+@Import({DefaultSSLFactory.class})
 public class LarkRestConfig {
+
 }

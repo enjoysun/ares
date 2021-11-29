@@ -1,5 +1,7 @@
 package cn.gov.zcy.ares.rest.meta.response;
 
+import org.springframework.http.HttpHeaders;
+
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 15:39:05
@@ -34,4 +36,14 @@ public class ResponseStructure<T> {
     }
 
     private T repBody;
+
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
+
+    public void setHttpHeaders(HttpHeaders httpHeaders) {
+        this.httpHeaders = httpHeaders;
+    }
+
+    private HttpHeaders httpHeaders;
 }
