@@ -27,6 +27,19 @@
             <artifactId>ares-rest-spring-boot-starter</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!--强制依赖-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

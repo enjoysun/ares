@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.gov.zcy.ares.rest.config.EnableAresRest,\
+  cn.gov.zcy.ares.rest.core.LarkRestTemplateBuilder

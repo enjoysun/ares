@@ -14,5 +14,5 @@ public interface RestServiceInterface {
      * @param requestStructure 请求实例
      * @param <Criteria> 返回值
      * */
-    <Criteria> ResponseStructure<Criteria> invoke(RequestStructure<Criteria> requestStructure);
+    <Criteria, PayLoad> ResponseStructure<Criteria> invoke(RequestStructure<Criteria, PayLoad> requestStructure);
 }

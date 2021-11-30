@@ -2,6 +2,8 @@ package cn.gov.zcy.ares.rest.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 11:54:46
@@ -102,12 +104,12 @@ public class LarkRestTemplateProperties {
         this.keyPassWord = keyPassWord;
     }
 
-    /*
+    /**
      * ssl 客户端jks地址
      * */
     private String keyStorePath;
 
-    /*
+    /**
      * 密码配置
      * */
     private String keyPassWord;
@@ -136,17 +138,17 @@ public class LarkRestTemplateProperties {
         this.proxyPort = proxyPort;
     }
 
-    /*
+    /**
      * 是否开启代理
      * */
     private boolean enableProxy = false;
 
-    /*
+    /**
      * 代理地址
      * */
     private String proxyUrl;
 
-    /*
+    /**
      * 代理端口
      * */
     private int proxyPort;
@@ -159,7 +161,7 @@ public class LarkRestTemplateProperties {
         this.scheme = scheme;
     }
 
-    /*
+    /**
      * 代理scheme: http|https
      * */
     private String scheme;

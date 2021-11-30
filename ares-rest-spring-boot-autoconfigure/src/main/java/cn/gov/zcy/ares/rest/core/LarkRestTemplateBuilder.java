@@ -1,6 +1,7 @@
 package cn.gov.zcy.ares.rest.core;
 
 import cn.gov.zcy.ares.rest.config.LarkRestTemplateProperties;
+import cn.gov.zcy.ares.rest.filter.RestRequestInterceptor;
 import org.apache.http.HttpHost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -11,29 +12,34 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 19:29:53
  */
 @Configuration
-public class RestTemplateBuilder {
+public class LarkRestTemplateBuilder {
 
     private final LarkRestTemplateProperties properties;
 
+
+    @Autowired
+    private List<RestRequestInterceptor> requestInterceptorList;
 
     @Autowired
     private LayeredConnectionSocketFactory layeredConnectionSocketFactory;
 
 
     @Autowired
-    public RestTemplateBuilder(LarkRestTemplateProperties properties) {
+    public LarkRestTemplateBuilder(LarkRestTemplateProperties properties) {
         this.properties = properties;
     }
 
@@ -45,9 +51,9 @@ public class RestTemplateBuilder {
      */
     @Bean
     public RestTemplate restTemplate() {
-        org.springframework.boot.web.client.RestTemplateBuilder builder = new org.springframework.boot.web.client.RestTemplateBuilder();
+        RestTemplateBuilder builder = new RestTemplateBuilder();
         RestTemplate restTemplate = builder
-//                .additionalCustomizers(new LarkRestTemplateCustomizer())
+                .additionalCustomizers(restTemplate1 -> restTemplate1.getInterceptors().addAll(requestInterceptorList))
 //                .errorHandler(new LarkRestErrorHandler())
                 .build();
         restTemplate.setRequestFactory(clientHttpRequestFactory());

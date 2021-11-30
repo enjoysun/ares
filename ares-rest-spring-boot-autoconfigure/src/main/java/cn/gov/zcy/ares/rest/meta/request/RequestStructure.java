@@ -12,8 +12,8 @@ import java.util.*;
  * @datetime 2021-11-29 15:06:10
  * * request-body
  */
-public class RequestStructure<T> {
-    public RequestStructure(Builder<T> builder) {
+public class RequestStructure<T,K> {
+    public RequestStructure(Builder<T, K> builder) {
         this.requestUrl = builder.requestUrl;
         this.requestMethod = builder.requestMethod;
         this.header = builder.header;
@@ -70,41 +70,57 @@ public class RequestStructure<T> {
         this.pathVariable = pathVariable;
     }
 
-    /*
+    /**
      * 请求地址
      * */
     private String requestUrl;
 
-    /*
+    /**
      * 请求方法
      * */
     private HttpMethod requestMethod;
 
-    /*
+    /**
      * 请求头
      * */
     private MultiValueMap<String, String> header;
 
-    /*
+    /**
      * 映射结果类
      * */
     private Class<T> resultMapper;
 
-    /*
+    /**
      * 请求参数key， value
      * */
     private Map<String, String> params;
 
-    /*
+    /**
      * 占位参数
      * */
     private List<Object> pathVariable;
 
-    public static <T> Builder<T> builder() {
-        return new Builder<T>();
+    public K getPayLoad() {
+        return payLoad;
     }
 
-    public static class Builder<T> {
+    public void setPayLoad(K payLoad) {
+        this.payLoad = payLoad;
+    }
+
+    /**
+    *
+    * post参数对象
+    *
+    **/
+    private K payLoad;
+
+
+    public static <T, K> Builder<T, K> builder() {
+        return new Builder<>();
+    }
+
+    public static class Builder<T, K> {
         private String requestUrl;
 
         private HttpMethod requestMethod;
@@ -117,38 +133,45 @@ public class RequestStructure<T> {
 
         private List<Object> pathVariable;
 
-        public Builder<T> requestUrl(String requestUrl) {
+        private K payLoad;
+
+        public Builder<T, K> requestUrl(String requestUrl) {
             this.requestUrl = requestUrl;
             return this;
         }
 
-        public Builder<T> requestMethod(HttpMethod requestMethod) {
+        public Builder<T, K> payLoad(K payLoad) {
+            this.payLoad = payLoad;
+            return this;
+        }
+
+        public Builder<T, K> requestMethod(HttpMethod requestMethod) {
             this.requestMethod = requestMethod;
             return this;
         }
 
-        public Builder<T> header(MultiValueMap<String, String> header) {
+        public Builder<T, K> header(MultiValueMap<String, String> header) {
             this.header = header;
             return this;
         }
 
-        public Builder<T> resultMapper(Class<T> resultMapper) {
+        public Builder<T, K> resultMapper(Class<T> resultMapper) {
             this.resultMapper = resultMapper;
             return this;
         }
 
-        public Builder<T> params(Map<String, String> params) {
+        public Builder<T, K> params(Map<String, String> params) {
             this.params = params;
             return this;
         }
 
-        public Builder<T> pathVariable(List<Object> pathVariable) {
+        public Builder<T, K> pathVariable(List<Object> pathVariable) {
             this.pathVariable = pathVariable;
             return this;
         }
 
-        public RequestStructure<T> build() {
-            return new RequestStructure<T>(this);
+        public RequestStructure<T, K> build() {
+            return new RequestStructure<T, K>(this);
         }
     }
 
