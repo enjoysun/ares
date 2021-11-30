@@ -1,6 +1,5 @@
 package cn.gov.zcy.ares.rest.filter;
 
-import cn.gov.zcy.ares.rest.annotation.ConditionalOnInterfaceMissingInstance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
