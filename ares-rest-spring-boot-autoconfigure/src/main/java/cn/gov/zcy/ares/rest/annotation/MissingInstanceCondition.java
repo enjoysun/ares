@@ -6,8 +6,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.util.Objects;
-
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>

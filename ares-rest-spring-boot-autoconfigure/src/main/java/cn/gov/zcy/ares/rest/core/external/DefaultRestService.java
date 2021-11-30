@@ -5,14 +5,12 @@ import cn.gov.zcy.ares.rest.meta.request.LarkHttpEntity;
 import cn.gov.zcy.ares.rest.meta.request.RequestStructure;
 import cn.gov.zcy.ares.rest.meta.response.ResponseStructure;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 /**

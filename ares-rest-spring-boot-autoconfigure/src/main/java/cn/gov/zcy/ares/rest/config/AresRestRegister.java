@@ -1,6 +1,5 @@
 package cn.gov.zcy.ares.rest.config;
 
-import cn.gov.zcy.ares.rest.register.RestInterceptRegister;
 import org.springframework.context.annotation.Import;
 
 /**

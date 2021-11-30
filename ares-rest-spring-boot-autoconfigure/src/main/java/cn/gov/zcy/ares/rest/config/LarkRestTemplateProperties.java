@@ -2,7 +2,6 @@ package cn.gov.zcy.ares.rest.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.List;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>

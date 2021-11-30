@@ -1,9 +1,6 @@
 package cn.gov.zcy.ares.rest.core.chain;
 
 import cn.gov.zcy.ares.rest.meta.request.RequestStructure;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
 
