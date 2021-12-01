@@ -17,7 +17,7 @@ import java.net.SocketTimeoutException;
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 20:13:34
  */
-public class DefaultRestService implements RestServiceInterface {
+public class DefaultRestService implements RestService {
 
     public DefaultRestService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -34,7 +34,7 @@ public class DefaultRestService implements RestServiceInterface {
             // 构建queryString
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(requestStructure.getRequestUrl());
             requestStructure.getParams().forEach(builder::queryParam);
-            requestStructure.setRequestUrl(builder.build().encode().toString());
+            requestStructure.updateRequestUrl(builder.build().encode().toString());
         }
         ResponseEntity<Criteria> exchange;
         ResponseStructure<Criteria> resp = new ResponseStructure<>();
@@ -42,7 +42,12 @@ public class DefaultRestService implements RestServiceInterface {
         header.set("Content-Type", "application/json;q=0.2,charset=UTF-8;q=0.2");
         LarkHttpEntity<PayLoad> payLoadLarkHttpEntity = new LarkHttpEntity<>(requestStructure.getPayLoad(), header, RequestStructure::headerSplice);
         try {
-            exchange = restTemplate.exchange(requestStructure.getRequestUrl(), requestStructure.getRequestMethod(), payLoadLarkHttpEntity, requestStructure.getResultMapper(), requestStructure.getPathVariable());
+            exchange = restTemplate.exchange(
+                    requestStructure.getRequestUrl(),
+                    requestStructure.getRequestMethod(),
+                    payLoadLarkHttpEntity,
+                    requestStructure.getResultMapper(),
+                    requestStructure.getPathVariable());
             resp.setRepCode(exchange.getStatusCodeValue());
             resp.setRepBody(exchange.getBody());
             resp.setHttpHeaders(exchange.getHeaders());

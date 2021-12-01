@@ -1,5 +1,8 @@
 package cn.gov.zcy.ares.rest.config;
 
+import cn.gov.zcy.ares.rest.annotation.ConditionalOnInterfaceMissingInstance;
+import cn.gov.zcy.ares.rest.filter.DefaultRestRequestInterceptor;
+import cn.gov.zcy.ares.rest.filter.RestRequestInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -21,7 +24,7 @@ import java.security.cert.X509Certificate;
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
  * @datetime 2021-11-29 19:33:46
  */
-public class DefaultSSLFactory {
+public class DefaultFactory {
     @Bean
     @ConditionalOnMissingBean
     public LayeredConnectionSocketFactory layeredConnectionSocketFactory(LarkRestTemplateProperties properties) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
@@ -45,5 +48,11 @@ public class DefaultSSLFactory {
                 .loadTrustMaterial(null, acceptingTrustStrategy)
                 .build();
         return new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
+    }
+
+    @Bean
+    @ConditionalOnInterfaceMissingInstance(baseClass = RestRequestInterceptor.class)
+    public RestRequestInterceptor restRequestInterceptor() {
+        return new DefaultRestRequestInterceptor();
     }
 }

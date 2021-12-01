@@ -1,12 +1,12 @@
 package cn.gov.zcy.ares.rest.config;
 
-import cn.gov.zcy.ares.rest.annotation.ConditionalOnInterfaceMissingInstance;
-import cn.gov.zcy.ares.rest.filter.DefaultRestRequestInterceptor;
-import cn.gov.zcy.ares.rest.filter.RestRequestInterceptor;
+import cn.gov.zcy.ares.rest.core.external.DefaultRestService;
+import cn.gov.zcy.ares.rest.core.external.RestService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -18,9 +18,7 @@ import org.springframework.context.annotation.Import;
 public class EnableAresRest {
 
     @Bean
-    @ConditionalOnInterfaceMissingInstance(baseClass = RestRequestInterceptor.class)
-    public RestRequestInterceptor restRequestInterceptor() {
-        return new DefaultRestRequestInterceptor();
+    public RestService restService(RestTemplate restTemplate) {
+        return new DefaultRestService(restTemplate);
     }
-
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -12,7 +13,7 @@ import java.util.*;
  * @datetime 2021-11-29 15:06:10
  * * request-body
  */
-public class RequestStructure<T,K> {
+public class RequestStructure<T, K> {
     public RequestStructure(Builder<T, K> builder) {
         this.requestUrl = builder.requestUrl;
         this.requestMethod = builder.requestMethod;
@@ -20,100 +21,82 @@ public class RequestStructure<T,K> {
         this.resultMapper = builder.resultMapper;
         this.params = builder.params;
         this.pathVariable = builder.pathVariable;
+        this.payLoad = builder.payLoad;
     }
 
     public String getRequestUrl() {
         return requestUrl;
     }
 
-    public void setRequestUrl(String requestUrl) {
+    public void updateRequestUrl(String requestUrl) {
         this.requestUrl = requestUrl;
     }
+
 
     public HttpMethod getRequestMethod() {
         return requestMethod;
     }
 
-    public void setRequestMethod(HttpMethod requestMethod) {
-        this.requestMethod = requestMethod;
-    }
 
     public MultiValueMap<String, String> getHeader() {
         return header;
     }
 
-    public void setHeader(MultiValueMap<String, String> header) {
-        this.header = header;
-    }
 
     public Class<T> getResultMapper() {
         return resultMapper;
     }
 
-    public void setResultMapper(Class<T> resultMapper) {
-        this.resultMapper = resultMapper;
-    }
 
     public Map<String, String> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
-        this.params = params;
-    }
 
     public List<Object> getPathVariable() {
         return pathVariable;
     }
 
-    public void setPathVariable(List<Object> pathVariable) {
-        this.pathVariable = pathVariable;
-    }
 
     /**
      * 请求地址
-     * */
+     */
     private String requestUrl;
 
     /**
      * 请求方法
-     * */
-    private HttpMethod requestMethod;
+     */
+    private final HttpMethod requestMethod;
 
     /**
      * 请求头
-     * */
-    private MultiValueMap<String, String> header;
+     */
+    private final MultiValueMap<String, String> header;
 
     /**
      * 映射结果类
-     * */
-    private Class<T> resultMapper;
+     */
+    private final Class<T> resultMapper;
 
     /**
      * 请求参数key， value
-     * */
-    private Map<String, String> params;
+     */
+    private final Map<String, String> params;
 
     /**
      * 占位参数
-     * */
-    private List<Object> pathVariable;
+     */
+    private final List<Object> pathVariable;
 
     public K getPayLoad() {
         return payLoad;
     }
 
-    public void setPayLoad(K payLoad) {
-        this.payLoad = payLoad;
-    }
 
     /**
-    *
-    * post参数对象
-    *
-    **/
-    private K payLoad;
+     * post参数对象
+     **/
+    private final K payLoad;
 
 
     public static <T, K> Builder<T, K> builder() {
@@ -171,7 +154,7 @@ public class RequestStructure<T,K> {
         }
 
         public RequestStructure<T, K> build() {
-            return new RequestStructure<T, K>(this);
+            return new RequestStructure<>(this);
         }
     }
 
@@ -194,7 +177,7 @@ public class RequestStructure<T,K> {
         MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<>();
         valueMap.add("Accept-Encoding:", "gzip");
         valueMap.add("Accept-Encoding:", "tar");
-        valueMap.add("ss","23");
+        valueMap.add("ss", "23");
         System.out.println(valueMap.get("Accept-Encoding:"));
         HttpHeaders linkedHashMap = headerSplice(valueMap);
         System.out.println(linkedHashMap.get("Accept-Encoding:"));
