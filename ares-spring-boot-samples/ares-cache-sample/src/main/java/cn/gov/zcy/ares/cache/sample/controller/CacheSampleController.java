@@ -1,4 +1,4 @@
-package cn.gov.zcy.ares.sample.cache.controller;
+package cn.gov.zcy.ares.cache.sample.controller;
 
 import cn.gov.zcy.ares.cache.support.AresCacheLettuceService;
 import cn.gov.zcy.ares.cache.support.AresCacheProperties;

@@ -1,4 +1,4 @@
-package cn.gov.zcy.ares.sample.cache;
+package cn.gov.zcy.ares.cache.sample;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
