@@ -1,1 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.gov.zcy.ares.adrasteia.config.LogInterludeAspect
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.gov.zcy.ares.adrasteia.config.DefaultServiceRegister

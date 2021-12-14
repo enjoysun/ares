@@ -1,9 +1,9 @@
 package cn.gov.zcy.ares.adrasteia.annotation;
 
+import cn.gov.zcy.ares.adrasteia.core.DefaultPersistContextBefore;
+import cn.gov.zcy.ares.adrasteia.core.LogPersistContextHandler;
+
 import java.lang.annotation.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -26,14 +26,19 @@ public @interface LogRecord {
     String fail() default "";
 
     /**
-     * 当前操作人标识
+     * 业务ID --spel
      */
-    String operator() default "";
+    String bizId() default "";
 
     /**
-     * 项目号
+     * 子业务编号 --spel
      */
-    long bixNo();
+    String childBizId() default "";
+
+    /**
+     * 操作类型
+     */
+    String actionType() default "";
 
     /**
      * 操作节点
@@ -41,25 +46,19 @@ public @interface LogRecord {
     String actionNode() default "";
 
     /**
-     * 扩展参数
-     */
-    String params() default "";
-
-
-    /**
-     * 触发条件
-     */
-    String condition() default "";
-
-    /**
-     * 身份类别
+     * 身份类别 --spel
      */
     String identityType() default "";
 
     /**
-     * 子业务编号
+     * 扩展参数
      */
-    String[] childBizId() default "";
+    String params() default "";
+
+    /**
+     * 触发条件
+     */
+    String condition() default "#{true}";
 
     /**
      * request-id
@@ -67,12 +66,13 @@ public @interface LogRecord {
     String traceId() default "";
 
     /**
-     * 数据流转类型
+     * 退回版本ID --spel
      */
-    String type() default "";
+    String context() default "";
 
     /**
-     * 退回版本ID
-     */
-    String stashContext() default "";
+     * 持久化之前行为
+     * */
+    Class<? extends LogPersistContextHandler> persistBefore() default DefaultPersistContextBefore.class;
+
 }

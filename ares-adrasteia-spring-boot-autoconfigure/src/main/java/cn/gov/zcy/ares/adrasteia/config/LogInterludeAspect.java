@@ -1,21 +1,24 @@
 package cn.gov.zcy.ares.adrasteia.config;
 
 import cn.gov.zcy.ares.adrasteia.annotation.LogRecord;
+import cn.gov.zcy.ares.adrasteia.core.chain.*;
 import cn.gov.zcy.ares.adrasteia.core.context.AresLogContext;
-import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
-import cn.gov.zcy.ares.adrasteia.core.parser.AresExpressionEvaluator;
-import cn.gov.zcy.ares.adrasteia.core.parser.AresValueParser;
-import cn.gov.zcy.ares.adrasteia.core.parser.ExpressionEnum;
-import cn.gov.zcy.ares.adrasteia.meta.LogPersistentContext;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresValueParser;
+import cn.gov.zcy.ares.adrasteia.core.envluation.ExpressionEnum;
+import cn.gov.zcy.ares.adrasteia.core.parser.ConditionParser;
+import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
 import cn.gov.zcy.ares.adrasteia.meta.MethodInvokeResult;
+import cn.gov.zcy.ares.adrasteia.meta.ParserData;
+import cn.gov.zcy.ares.adrasteia.spi.operator.OperatorInfuseService;
+import cn.gov.zcy.ares.adrasteia.spi.persistent.LogPersistService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,25 +30,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogInterludeAspect {
 
-    private AresExpressionEvaluator expressionEvaluator = new AresExpressionEvaluator();
 
-//    @Autowired
-//    private OperatorInfuseService operatorInfuseService;
+    @Autowired
+    private AresValueParser aresValueParser;
+
+    @Autowired
+    private OperatorInfuseService operatorInfuseService;
+
+    @Autowired
+    private LogPersistService logPersistService;
 
     @Around("@annotation(cn.gov.zcy.ares.adrasteia.annotation.LogRecord)")
-    public Object logExecuteInterlude(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object logExecuteInterlude(ProceedingJoinPoint joinPoint) {
         Object result = null;
         /*日志前置解析*/
         MethodInvokeResult methodInvokeResult = new MethodInvokeResult();
-        LogPersistentContext logPersistentContext = new LogPersistentContext();
+        LogPersistContext logPersistContext = new LogPersistContext();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         LogRecord annotation = signature.getMethod().getAnnotation(LogRecord.class);
-        logPersistentContext.setBizId(annotation.bixNo());
-        logPersistentContext.setActionNode(annotation.actionNode());
-        logPersistentContext.setActionClassName(signature.toString());
-        logPersistentContext.setChildBizId(annotation.childBizId());
-        logPersistentContext.setCondition(annotation.condition());
-        logPersistentContext.setIdentityType(annotation.identityType());
+        logPersistContext.setActionNode(annotation.actionNode());
+        logPersistContext.setActionClassName(signature.toString());
+        logPersistContext.setChildBizId(annotation.childBizId());
+        logPersistContext.setCondition(annotation.condition());
+        logPersistContext.setIdentityType(annotation.identityType());
         String traceId = "";
         if (StringUtils.isBlank(annotation.traceId())) {
             if (!StringUtils.isBlank(MDC.get("trace-id"))) {
@@ -54,62 +61,47 @@ public class LogInterludeAspect {
         } else {
             traceId = annotation.traceId();
         }
-        logPersistentContext.setTraceId(traceId);
-        logPersistentContext.setType(annotation.type());
-        logPersistentContext.setStashContext(annotation.stashContext());
+        logPersistContext.setTraceId(traceId);
+        logPersistContext.setActionType(annotation.actionType());
+        logPersistContext.setContext(annotation.context());
         /*函数执行*/
         try {
             result = joinPoint.proceed();
             methodInvokeResult.setInvokeSuccess(true);
         } catch (Throwable throwable) {
             methodInvokeResult.setInvokeSuccess(false);
+            methodInvokeResult.setThrowable(throwable);
             methodInvokeResult.setThrowableMessage(throwable.getMessage());
         }
 
         /*日志生产流程-不影响业务函数执行*/
         try {
-            Boolean conditionPass = isConditionPass(joinPoint, annotation.condition());
-            logPersistentContext.setConditionPass(conditionPass);
+            /*拦截条件判定*/
+            ParserData<Boolean> conditionData = ParserData.<Boolean>builder().expressionText(annotation.condition()).expressionEnum(ExpressionEnum.CONDITION).clazz(Boolean.class).joinPoint(joinPoint).result(result).build();
+            Boolean conditionPass = new ConditionParser().invoke(aresValueParser, conditionData, logPersistContext);
             if (conditionPass) {
-                getTargetText(joinPoint, methodInvokeResult.isInvokeSuccess() ? annotation.success() : annotation.fail(), logPersistentContext, result);
+                PersistLocal persistLocal = new PersistLocal(logPersistService, annotation.persistBefore());
+                FilterChain filterChain = new FilterChain(persistLocal);
+                filterChain.addFilter(
+                        new BizIdFilter(aresValueParser, annotation.bizId()),
+                        new ChildBizIdFilter(aresValueParser, annotation.childBizId()),
+                        new ContextFilter(aresValueParser, annotation.context()),
+                        new IdentityTypeFilter(aresValueParser, annotation.identityType()),
+                        new ContentFilter(aresValueParser, methodInvokeResult.isInvokeSuccess() ? annotation.success() : annotation.fail()),
+                        new FillOperatorFilter(operatorInfuseService)
+                );
+                filterChain.doFilter(logPersistContext, joinPoint, result, filterChain);
+
             }
             if (null != methodInvokeResult.getThrowable()) {
                 throw methodInvokeResult.getThrowable();
             }
         } catch (Throwable throwable) {
-            log.error(String.format("%s日志记录错误，错误原因:%s", logPersistentContext.getActionClassName(), throwable.getMessage()));
+            log.error(String.format("%s日志记录错误，错误原因:%s", logPersistContext.getActionClassName(), throwable.getMessage()));
         } finally {
+            logPersistContext = null;
             AresLogContext.clear();
         }
         return result;
-    }
-
-    private Boolean isConditionPass(JoinPoint joinPoint, String condition) {
-        try {
-            if (StringUtils.isBlank(condition)) {
-                return false;
-            }
-            return AresValueParser.valueParser(ExpressionEnum.CONDITION, joinPoint, null, condition, Boolean.class);
-        } catch (Throwable throwable) {
-            log.info(String.format("日志提取操作:执行条件执行失败，失败信息:%s", throwable.getMessage()));
-            return false;
-        }
-    }
-
-    /**
-     * 模板解析
-     */
-    private void getTargetText(JoinPoint joinPoint, String template, LogPersistentContext persistentContext, Object result) {
-        try {
-            if (StringUtils.isBlank(template)) {
-                persistentContext.setContent("");
-            }
-            String content = AresValueParser.valueParser(ExpressionEnum.TEXT, joinPoint, result, template, String.class);
-            persistentContext.setContent(content);
-        } catch (Throwable throwable) {
-            String format = String.format("日志提取操作:日志模板填充执行失败，失败信息:%s", throwable.getMessage());
-            log.info(format);
-            persistentContext.setErrorMsg(format);
-        }
     }
 }
