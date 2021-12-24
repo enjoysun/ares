@@ -4,6 +4,7 @@ import cn.gov.zcy.ares.adrasteia.core.envluation.AresValueParser;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
 import cn.gov.zcy.ares.adrasteia.meta.ParserData;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.expression.AnnotatedElementKey;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -21,7 +22,8 @@ public abstract class AbstractParser {
         try {
             boolean b = this.parserBefore(parserData, persistentContext);
             if (b) {
-                T parser = valueParser.valueParser(parserData.getExpressionEnum(), parserData.getJoinPoint(), parserData.getResult(), parserData.getExpressionText(), parserData.getClazz());
+                AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(parserData.getEvaluationContext().getMethod(), parserData.getClazz());
+                T parser = valueParser.valueParser(parserData.getExpressionEnum(), parserData.getEvaluationContext(), annotatedElementKey, parserData.getExpressionText(), parserData.getClazz());
                 this.parserAfter(parser, persistentContext);
                 return parser;
             }

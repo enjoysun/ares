@@ -3,12 +3,11 @@ package cn.gov.zcy.ares.adrasteia.config;
 import cn.gov.zcy.ares.adrasteia.annotation.LogRecord;
 import cn.gov.zcy.ares.adrasteia.core.chain.*;
 import cn.gov.zcy.ares.adrasteia.core.context.AresLogContext;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresExpressionEvaluator;
 import cn.gov.zcy.ares.adrasteia.core.envluation.AresValueParser;
-import cn.gov.zcy.ares.adrasteia.core.envluation.ExpressionEnum;
-import cn.gov.zcy.ares.adrasteia.core.parser.ConditionParser;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
 import cn.gov.zcy.ares.adrasteia.meta.MethodInvokeResult;
-import cn.gov.zcy.ares.adrasteia.meta.ParserData;
 import cn.gov.zcy.ares.adrasteia.spi.operator.OperatorInfuseService;
 import cn.gov.zcy.ares.adrasteia.spi.persistent.LogPersistService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -39,6 +40,12 @@ public class LogInterludeAspect {
 
     @Autowired
     private LogPersistService logPersistService;
+
+    @Autowired
+    private AresExpressionEvaluator aresExpressionEvaluator;
+
+    @Autowired
+    private List<LogRecordPrepareFilter> filters;
 
     @Around("@annotation(cn.gov.zcy.ares.adrasteia.annotation.LogRecord)")
     public Object logExecuteInterlude(ProceedingJoinPoint joinPoint) {
@@ -75,24 +82,16 @@ public class LogInterludeAspect {
         }
 
         /*日志生产流程-不影响业务函数执行*/
+        AresEvaluationContext evaluationContext = aresExpressionEvaluator.createEvaluationContext(result, joinPoint.getTarget().getClass(), signature.getMethod(), result, joinPoint.getArgs());
         try {
-            /*拦截条件判定*/
-            ParserData<Boolean> conditionData = ParserData.<Boolean>builder().expressionText(annotation.condition()).expressionEnum(ExpressionEnum.CONDITION).clazz(Boolean.class).joinPoint(joinPoint).result(result).build();
-            Boolean conditionPass = new ConditionParser().invoke(aresValueParser, conditionData, logPersistContext);
-            if (conditionPass) {
-                PersistLocal persistLocal = new PersistLocal(logPersistService, annotation.persistBefore());
-                FilterChain filterChain = new FilterChain(persistLocal);
-                filterChain.addFilter(
-                        new BizIdFilter(aresValueParser, annotation.bizId()),
-                        new ChildBizIdFilter(aresValueParser, annotation.childBizId()),
-                        new ContextFilter(aresValueParser, annotation.context()),
-                        new IdentityTypeFilter(aresValueParser, annotation.identityType()),
-                        new ContentFilter(aresValueParser, methodInvokeResult.isInvokeSuccess() ? annotation.success() : annotation.fail()),
-                        new FillOperatorFilter(operatorInfuseService)
-                );
-                filterChain.doFilter(logPersistContext, joinPoint, result, filterChain);
-
-            }
+            PersistLocal persistLocal = new PersistLocal(logPersistService, annotation.persistBefore());
+            OperatorInjection.getInstance().doInjection(operatorInfuseService, logPersistContext, evaluationContext);
+            FilterChain filterChain = new FilterChain(persistLocal);
+//                filterChain.addFilter(
+//                        new FillOperatorFilter(operatorInfuseService)
+//                );
+            filterChain.addFilter(filters);
+            filterChain.doFilter(annotation, evaluationContext, logPersistContext, filterChain);
             if (null != methodInvokeResult.getThrowable()) {
                 throw methodInvokeResult.getThrowable();
             }

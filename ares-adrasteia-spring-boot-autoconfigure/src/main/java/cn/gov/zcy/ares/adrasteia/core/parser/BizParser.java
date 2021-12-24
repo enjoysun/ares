@@ -23,4 +23,20 @@ public class BizParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setBizId(String.valueOf(t));
     }
+
+    private static class Biz {
+        private final static BizParser BIZ_PARSER;
+
+        static {
+            BIZ_PARSER = new BizParser();
+        }
+
+        public static BizParser getInstance() {
+            return BIZ_PARSER;
+        }
+    }
+
+    public static BizParser getParser() {
+        return Biz.getInstance();
+    }
 }

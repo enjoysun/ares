@@ -24,22 +24,29 @@ public enum ExpressionEnum {
     /**
      * 子业务ID
      */
-    CHILDBIZID(5, "子业务标识植入表达式"),
+    CHILD_BIZ_ID(5, "子业务标识植入表达式"),
     /**
      * 身份标识
      */
-    IDENTITYTYPE(6, "身份标识植入表达式");
-
-    private int type;
+    IDENTITY_TYPE(6, "身份标识植入表达式"),
+    /**
+     * 身份标识
+     */
+    OPERATOR(7, "操作人植入表达式");
 
     public String getName() {
         return name;
     }
 
     private String name;
+    private int type;
+
+    public int getType() {
+        return type;
+    }
 
     ExpressionEnum(int type, String name) {
-        this.type = type;
         this.name = name;
+        this.type = type;
     }
 }

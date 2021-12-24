@@ -1,10 +1,11 @@
 package cn.gov.zcy.ares.adrasteia.core.chain;
 
+import cn.gov.zcy.ares.adrasteia.annotation.LogRecord;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
-import org.aspectj.lang.JoinPoint;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,19 +23,22 @@ public class FilterChain implements LogRecordPrepareFilter {
 
     private PersistLocal persistLocal;
 
-    public void addFilter(LogRecordPrepareFilter... chains) {
+    public void addFilter(Collection<LogRecordPrepareFilter> chains) {
         if (null == filters) {
             filters = new ArrayList<>();
         }
-        filters.addAll(Arrays.asList(chains));
+        filters.addAll(chains);
     }
 
+
     @Override
-    public void doFilter(LogPersistContext persistContext, JoinPoint joinPoint, Object result, FilterChain chain) {
+    public void doFilter(LogRecord logRecord, AresEvaluationContext evaluationContext, LogPersistContext persistentContext, FilterChain chain) {
+
         if (pos.get() == filters.size()) {
-            persistLocal.invokePersist(persistContext);
-        } else {
-            filters.get(pos.getAndIncrement()).doFilter(persistContext, joinPoint, result, chain);
+            /*结束钩子*/
+            persistLocal.invokePersist(persistentContext);
+        }else {
+            filters.get(pos.getAndIncrement()).doFilter(logRecord, evaluationContext, persistentContext, chain);
         }
     }
 }

@@ -29,5 +29,22 @@ public class AresEvaluationContext extends MethodBasedEvaluationContext {
         if (null != beanFactory) {
             setBeanResolver(new BeanFactoryResolver(beanFactory));
         }
+        this.method = method;
     }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public Class<?> getSource() {
+        return source;
+    }
+
+    private Method method;
+
+    public void setSource(Class<?> source) {
+        this.source = source;
+    }
+
+    private Class<?> source;
 }

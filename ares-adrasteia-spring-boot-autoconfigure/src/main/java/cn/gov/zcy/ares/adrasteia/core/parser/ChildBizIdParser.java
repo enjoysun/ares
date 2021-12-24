@@ -23,4 +23,20 @@ public class ChildBizIdParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setChildBizId(String.valueOf(t));
     }
+
+    private static class ChildBiz {
+        private final static ChildBizIdParser CHILD_BIZ_ID_PARSER;
+
+        static {
+            CHILD_BIZ_ID_PARSER = new ChildBizIdParser();
+        }
+
+        public static ChildBizIdParser getInstance() {
+            return CHILD_BIZ_ID_PARSER;
+        }
+    }
+
+    public static ChildBizIdParser getParser() {
+        return ChildBiz.getInstance();
+    }
 }

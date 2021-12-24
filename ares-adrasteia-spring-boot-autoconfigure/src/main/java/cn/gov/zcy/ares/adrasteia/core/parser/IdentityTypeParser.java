@@ -22,4 +22,20 @@ public class IdentityTypeParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setIdentityType(String.valueOf(t));
     }
+
+    private static class IdentityType {
+        private final static IdentityTypeParser IDENTITY_TYPE_PARSER;
+
+        static {
+            IDENTITY_TYPE_PARSER = new IdentityTypeParser();
+        }
+
+        public static IdentityTypeParser getInstance() {
+            return IDENTITY_TYPE_PARSER;
+        }
+    }
+
+    public static IdentityTypeParser getParser() {
+        return IdentityType.getInstance();
+    }
 }

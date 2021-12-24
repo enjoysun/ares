@@ -1,9 +1,11 @@
 package cn.gov.zcy.ares.adrasteia.meta;
 
+import cn.gov.zcy.ares.adrasteia.annotation.LogRecord;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
 import cn.gov.zcy.ares.adrasteia.core.envluation.ExpressionEnum;
 import lombok.Builder;
 import lombok.Data;
-import org.aspectj.lang.JoinPoint;
+
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -14,7 +16,6 @@ import org.aspectj.lang.JoinPoint;
 public class ParserData<T> {
     private Class<? extends T> clazz;
     private ExpressionEnum expressionEnum;
-    private JoinPoint joinPoint;
-    private Object result;
     private String expressionText;
+    private AresEvaluationContext evaluationContext;
 }

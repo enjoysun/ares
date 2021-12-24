@@ -157,4 +157,4 @@ public class LogOperatorInfuseConfiguration implements OperatorInfuseService {
 // 需要在启动resources资源文件夹下新建META-INF/services文件夹，文件和内容如下
 // cn.gov.zcy.log.record.spi.operator.OperatorInfuseService:cn.gov.zcy.zeus.web.configuration.LogOperatorInfuseConfiguration
 // cn.gov.zcy.log.record.spi.persist.LogPersistService:cn.gov.zcy.zeus.service.record.PersistLogRecordPenetrate
-```
+```  

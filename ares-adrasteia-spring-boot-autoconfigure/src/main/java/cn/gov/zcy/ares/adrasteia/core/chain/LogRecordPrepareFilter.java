@@ -1,7 +1,8 @@
 package cn.gov.zcy.ares.adrasteia.core.chain;
 
+import cn.gov.zcy.ares.adrasteia.annotation.LogRecord;
+import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
-import org.aspectj.lang.JoinPoint;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -9,5 +10,5 @@ import org.aspectj.lang.JoinPoint;
  * 责任链
  */
 public interface LogRecordPrepareFilter {
-    void doFilter(LogPersistContext persistContext, JoinPoint joinPoint, Object result, FilterChain chain);
+    void doFilter(LogRecord logRecord, AresEvaluationContext evaluationContext, LogPersistContext persistentContext, FilterChain chain);
 }

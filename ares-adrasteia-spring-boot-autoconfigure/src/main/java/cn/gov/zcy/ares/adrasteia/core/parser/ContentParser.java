@@ -22,4 +22,20 @@ public class ContentParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setContent(String.valueOf(t));
     }
+
+    private static class Content {
+        private final static ContentParser CONTENT_PARSER;
+
+        static {
+            CONTENT_PARSER = new ContentParser();
+        }
+
+        public static ContentParser getInstance() {
+            return CONTENT_PARSER;
+        }
+    }
+
+    public static ContentParser getParser() {
+        return Content.getInstance();
+    }
 }

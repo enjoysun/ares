@@ -22,4 +22,20 @@ public class ContextParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setContext(String.valueOf(t));
     }
+
+    private static class Context {
+        private final static ContextParser CONTEXT_PARSER;
+
+        static {
+            CONTEXT_PARSER = new ContextParser();
+        }
+
+        public static ContextParser getInstance() {
+            return CONTEXT_PARSER;
+        }
+    }
+
+    public static ContextParser getParser() {
+        return Context.getInstance();
+    }
 }

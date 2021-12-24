@@ -2,6 +2,7 @@ package cn.gov.zcy.ares.adrasteia.annotation;
 
 import cn.gov.zcy.ares.adrasteia.config.AspectEvaluationSourceSelector;
 import cn.gov.zcy.ares.adrasteia.config.LogInterludeAspect;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -15,6 +16,7 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 @RegisterSpi
+//@ComponentScan("cn.gov.zcy.ares.adrasteia.core.chain.filter")
 @Import({LogInterludeAspect.class, AspectEvaluationSourceSelector.class})
 public @interface EnableLogRecord {
 }

@@ -25,4 +25,20 @@ public class ConditionParser extends AbstractParser {
     public <T> void parserAfter(T t, LogPersistContext persistentContext) {
         persistentContext.setConditionPass((Boolean) t);
     }
+
+    private static class Condition {
+        private final static ConditionParser CONDITION_PARSER;
+
+        static {
+            CONDITION_PARSER = new ConditionParser();
+        }
+
+        public static ConditionParser getInstance() {
+            return CONDITION_PARSER;
+        }
+    }
+
+    public static ConditionParser getParser() {
+        return Condition.getInstance();
+    }
 }

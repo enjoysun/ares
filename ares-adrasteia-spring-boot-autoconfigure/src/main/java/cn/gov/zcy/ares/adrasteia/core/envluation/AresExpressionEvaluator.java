@@ -67,21 +67,20 @@ public class AresExpressionEvaluator extends CachedExpressionEvaluator implement
         if (null == targetMethod) {
             // 代理处理工具<可以辨别属于cglib还是接口等原信息获取，getMostSpecificMethod即获取类被代理的原方法>
             targetMethod = AopUtils.getMostSpecificMethod(method, targetClass);
-            if (null == targetMethod) {
-                targetMethod = method;
-            }
             this.targetMethodCache.put(annotatedElementKey, targetMethod);
         }
         return targetMethod;
     }
 
-    public EvaluationContext createEvaluationContext(Object cacheRootObject, Class<?> targetClass, Method method, Object result, Object... args) {
+    public AresEvaluationContext createEvaluationContext(Object cacheRootObject, Class<?> targetClass, Method method, Object result, Object... args) {
         Method originalTargetMethod = getTargetMethod(targetClass, method);
         // 扩展日志上下文<增强MethodBasedEvaluationContext，在增强类中实现>
-        return new AresEvaluationContext(cacheRootObject, originalTargetMethod, args, parameterNameDiscoverer, result, null, this.applicationContext);
+        AresEvaluationContext aresEvaluationContext = new AresEvaluationContext(cacheRootObject, originalTargetMethod, args, parameterNameDiscoverer, result, null, this.applicationContext);
+        aresEvaluationContext.setSource(targetClass);
+        return aresEvaluationContext;
     }
 
-    public <T> T parserExpression(ExpressionEnum expressionEnum, String expressionSpel, AnnotatedElementKey annotatedElementKey, EvaluationContext evaluationContext, Class<T> tClass) {
+    public <T> T parserExpression(ExpressionEnum expressionEnum, String expressionSpel, AnnotatedElementKey annotatedElementKey, AresEvaluationContext evaluationContext, Class<T> tClass) {
         Expression expression;
         Map<ExpressionKey, Expression> keyExpressionMap = this.expressionMap.get(expressionEnum);
         if (null == keyExpressionMap) {
@@ -95,12 +94,7 @@ public class AresExpressionEvaluator extends CachedExpressionEvaluator implement
         return null;
     }
 
-    public <T> T getValue(ExpressionEnum expressionEnum, @Nullable Object rootObject, Class<?> source, Method method, String expression, Class<T> target, Object result, Object... args) {
-        if (null == args) {
-            return null;
-        }
-        EvaluationContext evaluationContext = createEvaluationContext(rootObject, source, method, result, args);
-        AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(method, source);
+    public <T> T getValue(ExpressionEnum expressionEnum, AresEvaluationContext evaluationContext, AnnotatedElementKey annotatedElementKey, String expression, Class<T> target) {
         return parserExpression(expressionEnum, expression, annotatedElementKey, evaluationContext, target);
     }
 
