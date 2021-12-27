@@ -9,6 +9,7 @@ import cn.gov.zcy.ares.adrasteia.core.envluation.ExpressionEnum;
 import cn.gov.zcy.ares.adrasteia.core.parser.ContentParser;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
 import cn.gov.zcy.ares.adrasteia.meta.ParserData;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <a href="mailto:youming@cai-inc.com">斜照</a>
@@ -24,7 +25,9 @@ public class ContentFilter implements LogRecordPrepareFilter {
 
     @Override
     public void doFilter(LogRecord logRecord, AresEvaluationContext evaluationContext, LogPersistContext persistentContext, FilterChain chain) {
-        ParserData<String> parserData = ParserData.<String>builder().expressionEnum(ExpressionEnum.TEXT).evaluationContext(evaluationContext).expressionText(logRecord.success()).clazz(String.class).build();
+        ParserData<String> parserData = ParserData.<String>builder().expressionEnum(ExpressionEnum.TEXT).evaluationContext(evaluationContext).expressionText(
+                StringUtils.isEmpty(persistentContext.getErrorMsg()) ? logRecord.success() : logRecord.fail()
+        ).clazz(String.class).build();
         ContentParser.getParser().invoke(logValueParser, parserData, persistentContext);
         chain.doFilter(logRecord, evaluationContext, persistentContext, chain);
     }

@@ -5,7 +5,6 @@ import cn.gov.zcy.ares.adrasteia.core.chain.*;
 import cn.gov.zcy.ares.adrasteia.core.context.AresLogContext;
 import cn.gov.zcy.ares.adrasteia.core.envluation.AresEvaluationContext;
 import cn.gov.zcy.ares.adrasteia.core.envluation.AresExpressionEvaluator;
-import cn.gov.zcy.ares.adrasteia.core.envluation.AresValueParser;
 import cn.gov.zcy.ares.adrasteia.meta.LogPersistContext;
 import cn.gov.zcy.ares.adrasteia.meta.MethodInvokeResult;
 import cn.gov.zcy.ares.adrasteia.spi.operator.OperatorInfuseService;
@@ -30,10 +29,6 @@ import java.util.List;
 @Aspect
 @Component
 public class LogInterludeAspect {
-
-
-    @Autowired
-    private AresValueParser aresValueParser;
 
     @Autowired
     private OperatorInfuseService operatorInfuseService;
@@ -78,6 +73,7 @@ public class LogInterludeAspect {
         } catch (Throwable throwable) {
             methodInvokeResult.setInvokeSuccess(false);
             methodInvokeResult.setThrowable(throwable);
+            logPersistContext.setErrorMsg(String.format("异常:%s", throwable.getMessage()));
             methodInvokeResult.setThrowableMessage(throwable.getMessage());
         }
 
@@ -87,9 +83,6 @@ public class LogInterludeAspect {
             PersistLocal persistLocal = new PersistLocal(logPersistService, annotation.persistBefore());
             OperatorInjection.getInstance().doInjection(operatorInfuseService, logPersistContext, evaluationContext);
             FilterChain filterChain = new FilterChain(persistLocal);
-//                filterChain.addFilter(
-//                        new FillOperatorFilter(operatorInfuseService)
-//                );
             filterChain.addFilter(filters);
             filterChain.doFilter(annotation, evaluationContext, logPersistContext, filterChain);
             if (null != methodInvokeResult.getThrowable()) {
@@ -99,6 +92,7 @@ public class LogInterludeAspect {
             log.error(String.format("%s日志记录错误，错误原因:%s", logPersistContext.getActionClassName(), throwable.getMessage()));
         } finally {
             logPersistContext = null;
+            evaluationContext = null;
             AresLogContext.clear();
         }
         return result;

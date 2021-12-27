@@ -21,6 +21,7 @@ public class SpelTestController {
 
     /**
      * 全文本压测案例
+     *
      * @param model 压测参数
      * @return responseModel 返回示例
      */
@@ -42,6 +43,16 @@ public class SpelTestController {
         return responseModel;
     }
 
+    @LogRecord(success = "查询执行，获取code:#{#code}")
+    @GetMapping("get")
+    public ResponseModel getDemo(String code) {
+        ResponseModel responseModel = new ResponseModel();
+        responseModel.setCode("200");
+        responseModel.setChildBizId(code);
+        responseModel.setContextIndex("stash");
+        return responseModel;
+    }
+
     public static class StashContextLogPersistBefore implements LogPersistContextHandler {
         @Override
         public void persistentBefore(LogPersistContext logPersistContext) {
@@ -53,19 +64,19 @@ public class SpelTestController {
     public static class RequestModel {
         /**
          * 测试tag
-         * */
+         */
         private String tag;
         /**
          * 测试IDS
-         * */
+         */
         private List<String> ids;
         /**
          * 测试项目ID
-         * */
+         */
         private String bizId;
         /**
          * 测试身份标识
-         * */
+         */
         private String identity;
     }
 
@@ -73,19 +84,19 @@ public class SpelTestController {
     public static class ResponseModel {
         /**
          * 测试code
-         * */
+         */
         private String code;
         /**
          * 测试入参
-         * */
+         */
         private RequestModel requestModel;
         /**
          * 测试子业务ID
-         * */
+         */
         private String childBizId;
         /**
          * 测试扩展上下文
-         * */
+         */
         private String contextIndex;
     }
 }
